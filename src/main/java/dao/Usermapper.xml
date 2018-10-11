@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.Usermapper">
+
+
+    <select id="login" parameterType="String" resultType="domain.User">
+		select * from user where userid=#{0} and`password`=#{1}
+	</select>
+    <select id="findOpenid2ByName" parameterType="String" resultType="String">
+		select openid2 from user where uname=#{uname}
+	</select>
+    <select id="findOpenidByUserid" parameterType="String" resultType="String">
+		select openid from user where userid=#{userid}
+	</select>
+    <select id="findAllAuditor" parameterType="String" resultType="domain.User">
+        select * from user where admin='1'and dept=#{dept}
+    </select>
+    <select id="findAllAuditorName" parameterType="String" resultType="String">
+        select distinct uname from user where admin='1'and dept=#{dept}
+    </select>
+    <update id="EditPassword" parameterType="String">
+        update user set `password`=#{2} where userid=#{0}and `password`=#{1}
+    </update>
+    <update id="EditTelephone" parameterType="String">
+        update user set telephone=#{1} where userid=#{0}
+    </update>
+    <update id="addOpenid2ByUnionid" parameterType="String">
+        update user set openid2=#{0} where unionid=#{1}
+    </update>
+    <update id="InsertOpenidUnionid" parameterType="String">
+        update user set openid=#{1},unionid=#{2} where userid=#{0}
+    </update>
+    <!-- <select id="isPasswordEqual" parameterType="String" resultType="String">
+        select `password` from User where `username`=#{username}
+    </select>-->
+    <!-- <select id="findDeptEmployee" resultType="domain.Employee" parameterType="String">
+        select * from Employee where dept=#{dept}
+    </select>
+    <insert id="add" parameterType="domain.Employee">
+        insert into Employee(uname,udate,starttime,endtime,totaltime,reason,dept,status)
+         value(#{uname},#{udate},#{starttime},#{endtime},#{totaltime},#{reason},#{dept},#{status})
+    </insert> -->
+</mapper>

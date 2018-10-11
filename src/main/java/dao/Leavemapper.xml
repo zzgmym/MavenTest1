@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.Leavemapper">
+
+    <select id="findById" parameterType="String" resultType="domain.Leave">
+		select * from `leave` where id=#{id}
+	</select>
+    <select id="findUncheckCount" parameterType="String" resultType="int">
+		select count(*)from `leave` where auditor=#{auditor}and status='unchecked'
+	</select>
+    <insert id="add" parameterType="domain.Leave">
+        insert into `leave`(id,uname,dept,utype,startdate,enddate,starttime,endtime,reason,auditor,totaltime,status,imgpath,imgname,submittime)
+         value(#{id},#{uname},#{dept},#{utype},#{startdate},#{enddate},#{starttime},#{endtime},#{reason},#{auditor},#{totaltime},#{status},#{imgpath},#{imgname},#{submittime})
+    </insert>
+    <select id="listByName" parameterType="String" resultType="domain.Leave">
+		select * from `leave` where uname=#{uname}order by startdate desc ,endtime desc
+	</select>
+    <select id="listUncheck" parameterType="String" resultType="domain.Leave">
+		select * from `leave` where auditors like CONCAT('%',#{auditor},'%')and status='unchecked'order by startdate desc ,endtime desc
+	</select>
+    <select id="listChecked" parameterType="String" resultType="domain.Leave" >
+	    select * from `leave` where  auditor=#{auditor} and status='pass' order by startdate desc ,endtime desc
+	</select>
+    <select id="isDateRepeat" parameterType="String" resultType="String">
+		select dept from `leave` where uname=#{0}and((startdate between #{1} and #{2})or (enddate between #{1} and #{2}))
+	</select>
+ <!--   <select id="login" parameterType="String" resultType="domain.User">
+		select * from User where username=#{0} and`password`=#{1}
+	</select>
+    <select id="isPasswordEqual" parameterType="String" resultType="String">
+        select `password` from User where `username`=#{username}
+    </select>
+    <update id="EditPassword" parameterType="String">
+        update User set `password`=#{1} where `username`=#{0}
+    </update>-->
+    <!-- <select id="findDeptEmployee" resultType="domain.Employee" parameterType="String">
+        select * from Employee where dept=#{dept}
+    </select>
+    <insert id="add" parameterType="domain.Employee">
+        insert into Employee(uname,udate,starttime,endtime,totaltime,reason,dept,status)
+         value(#{uname},#{udate},#{starttime},#{endtime},#{totaltime},#{reason},#{dept},#{status})
+    </insert> -->
+    <update id="passById" parameterType="String">
+        update  `leave` set status='pass', auditor=#{1},checktime=#{2},checkreason=#{3}where id=#{0}
+    </update>
+    <update id="unpassById" parameterType="String">
+        update  `leave` set status='unpass', auditor=#{1},checktime=#{2},checkreason=#{3}where id=#{0}
+    </update>
+    <update id="revokeById" parameterType="String">
+        update  `leave` set status='revoked',checktime=#{1} where id=#{0}and status='unchecked'
+    </update>
+    <delete id="delLeaveById" parameterType="int">
+        delete from `leave` where id=#{id}
+    </delete>
+</mapper>

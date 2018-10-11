@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.Employeemapper">
+
+    <!--
+    id:sql语句唯一标识
+    parameterType:指定传入参数类型
+    resultType:返回结果集类型
+    #{}占位符:起到占位作用,如果传入的是基本类型(string,long,double,int,boolean,float等),那么#{}中的变量名称可以随意写.
+     -->
+    <select id="findById" parameterType="String" resultType="domain.Employee">
+		select * from employee where id=#{id}
+	</select>
+<!--
+    <select id="findCountByDate" parameterType="String" resultType="int">
+		select count(*)from Employee where udate=#{0}and dept=#{1}and status='通过审核'
+	</select>
+-->
+    <select id="findUncheckCount" parameterType="String" resultType="int">
+		select count(*)from employee where auditor=#{auditor}and status='unchecked'
+	</select>
+    <select id="findNameByDate" parameterType="String" resultType="String">
+		select distinct uname from employee where udate=#{0} and status='pass'and dept=#{1}
+	</select>
+    <select id="isDateRepeat" parameterType="String" resultType="String">
+		select dept from employee where udate=#{0}and uname=#{1}
+	</select>
+    <select id="findEmpByDate" parameterType="String" resultType="domain.Employee">
+		select * from employee where udate=#{0}and dept=#{1}and status='unchecked' order by udate desc ,endtime desc
+	</select>
+    <select id="findEmpByDate2" parameterType="String" resultType="domain.Employee">
+		select * from employee where udate=#{0}and dept=#{1}and status='pass' order by udate desc ,endtime desc
+	</select>
+    <select id="findEveryName"  resultType="String">
+		select distinct uname from employee
+	</select>
+    <select id="findByName" resultType="domain.Empleave" parameterType="String">
+	    SELECT id,uname,dept,'utype',udate,'startdate','enddate',starttime,endtime,totaltime,reason,submittime,auditor,checkreason,checktime,status,'imgpath','imgname' FROM employee WHERE uname=#{uname}
+UNION
+SELECT id,uname,dept,utype,'udate',startdate,enddate,starttime,endtime,totaltime,reason,submittime,auditor,checkreason,checktime,status,imgpath,imgname FROM `leave`WHERE uname=#{uname}
+ORDER BY submittime desc ;
+	</select>
+    <select id="findEveryEmp" resultType="domain.Employee" parameterType="String">
+	    select * from employee where dept=#{dept} order by udate desc ,endtime desc
+	</select>
+    <select id="findUncheckByAuditor" parameterType="String" resultType="domain.Empleave" >
+	   SELECT id,uname,dept,'utype',udate,'startdate','enddate',starttime,endtime,totaltime,reason,submittime,status,'imgpath','imgname' FROM employee WHERE auditor=#{auditor}and status='unchecked'
+UNION
+SELECT id,uname,dept,utype,'udate',startdate,enddate,starttime,endtime,totaltime,reason,submittime,status,imgpath,imgname FROM `leave`WHERE auditor=#{auditor}and status='unchecked'
+ORDER BY submittime desc ;
+	</select>
+    <select id="findCheckedByAuditor" parameterType="String" resultType="domain.Empleave" >
+	    SELECT id,uname,dept,'utype',udate,'startdate','enddate',starttime,endtime,totaltime,reason,submittime,checkreason,checktime,status,'imgpath','imgname' FROM employee WHERE auditor=#{auditor}and status!='unchecked'
+UNION
+SELECT id,uname,dept,utype,'udate',startdate,enddate,starttime,endtime,totaltime,reason,submittime,checkreason,checktime,status,imgpath,imgname FROM `leave`WHERE auditor=#{auditor} and status!='unchecked'
+ORDER BY submittime desc ;
+	</select>
+    <select id="findUncheckByName" parameterType="String" resultType="domain.Empleave" >
+	   SELECT id,uname,dept,'utype',udate,'startdate','enddate',starttime,endtime,totaltime,reason,submittime,status,'imgpath','imgname' FROM employee WHERE uname=#{uname}and status='unchecked'
+UNION
+SELECT id,uname,dept,utype,'udate',startdate,enddate,starttime,endtime,totaltime,reason,submittime,status,imgpath,imgname FROM `leave`WHERE uname=#{uname}and status='unchecked'
+ORDER BY submittime desc ;
+	</select>
+    <select id="findCheckedByName" parameterType="String" resultType="domain.Empleave" >
+	    SELECT id,uname,dept,'utype',udate,'startdate','enddate',starttime,endtime,totaltime,reason,submittime,checkreason,checktime,status,'imgpath','imgname' FROM employee WHERE uname=#{uname}and status!='unchecked'
+UNION
+SELECT id,uname,dept,utype,'udate',startdate,enddate,starttime,endtime,totaltime,reason,submittime,checkreason,checktime,status,imgpath,imgname FROM `leave`WHERE uname=#{uname} and status!='unchecked'
+ORDER BY submittime desc ;
+	</select>
+    <!--<resultMap id="empResultMap" type="domain.Employee">-->
+        <!--<id column="id" jdbcType="INT" property="id" />-->
+        <!--<result column="uname" jdbcType="VARCHAR" property="uname" />-->
+        <!--<result column="udate" jdbcType="DATE" property="udate" />-->
+        <!--<result column="starttime" jdbcType="DATE" property="starttime" />-->
+        <!--<result column="endtime" jdbcType="DATE" property="endtime" />-->
+        <!--<result column="totaltime" jdbcType="FLOAT" property="totaltime" />-->
+        <!--<result column="reason" jdbcType="VARCHAR" property="reason" />-->
+        <!--<result column="dept" jdbcType="VARCHAR" property="dept" />-->
+        <!--<result column="status" jdbcType="INT" property="status" />-->
+    <!--</resultMap>-->
+    <insert id="add" parameterType="domain.Employee">
+        insert into employee(id,uname,udate,starttime,endtime,totaltime,reason,dept,status,auditor,submittime)
+         value(#{id},#{uname},#{udate},#{starttime},#{endtime},#{totaltime},#{reason},#{dept},#{status},#{auditor},#{submittime})
+    </insert>
+    <update id="passById" parameterType="String">
+        update  employee set status='pass',checktime=#{2},checkreason=#{3}where id=#{0}and status='unchecked'and auditor=#{1}
+    </update>
+    <update id="unpassById" parameterType="String">
+        update  employee set status='unpass',checktime=#{2},checkreason=#{3}where id=#{0}and status='unchecked'and auditor=#{1}
+    </update>
+    <update id="revokeById" parameterType="String">
+        update  employee set status='revoked',checktime=#{1} where id=#{0}and status='unchecked'
+    </update>
+    <update id="editEmp" parameterType="domain.Employee">
+        update  employee set udate=#{udate},starttime=#{starttime},endtime=#{endtime},reason=#{reason}where id=#{id}
+    </update>
+    <delete id="delEmpById" parameterType="int">
+        delete from employee where id=#{id}
+    </delete>
+</mapper>
